@@ -1,0 +1,189 @@
+﻿<Window x:Class="WPF1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF1"
+        mc:Ignorable=""
+        Title="ShopManager" Height="600" Width="800" MinHeight="500" MinWidth="500" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <local:ConvertPrice x:Key="convertprice"></local:ConvertPrice>
+        <local:ConvertCategory x:Key="convertcategory"></local:ConvertCategory>
+        <ImageBrush x:Key="MyImageSource" ImageSource="addtocart.png" />
+        <ImageBrush x:Key="MyImageSource2" ImageSource="removeFromCart.png" />
+        <CollectionViewSource x:Key="cos" Source="{Binding prolist}"></CollectionViewSource>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <Style x:Key="alternatingWithTriggers" TargetType="{x:Type ListBoxItem}">
+                <Setter Property="Background" Value="{StaticResource MyImageSource}"/>
+                <Style.Triggers>
+                    <Trigger Property="ListBox.AlternationIndex" Value="0">
+                        <Setter Property="Background" Value="#FF4C85FF"/>
+                    </Trigger>
+                    <Trigger Property="ListBox.AlternationIndex" Value="1">
+                        <Setter Property="Background" Value="#FFFF8C7C"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+        <Menu IsMainMenu="True">
+            <MenuItem Header="File">
+                <MenuItem Header="Load" Click="loadit"/>
+                <MenuItem Header="Save" Click="saveit"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="MenuItem_Click"/>
+            </MenuItem>
+            <MenuItem Header="Products">
+                <MenuItem Header="AddProducts" Click="addproducts"/>
+                <MenuItem Header="ClearProducts" Click="clearproducts"/>
+            </MenuItem>
+            <MenuItem Header="About" Click="MenuItem_Click_1"/>
+        </Menu>
+        <TabControl SelectionChanged="TabControl_SelectionChanged" Grid.Row="1">
+            <TabControl.Background>
+                <RadialGradientBrush
+            GradientOrigin="0.5,0.5"
+            Center="0.5,0.5" >
+                    <RadialGradientBrush.GradientStops>
+                        <GradientStop Color="#FFFFBD7C" Offset="0" />
+                        <GradientStop Color="#FFd1FF8C" Offset="1.0" />
+                    </RadialGradientBrush.GradientStops>
+                </RadialGradientBrush>
+            </TabControl.Background>
+            <TabItem Header="Shop">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel HorizontalAlignment="Left"  MaxWidth="150" MinWidth="150">
+                        <StackPanel.Background>
+                            <LinearGradientBrush StartPoint="0,1" EndPoint="1,0" >
+                                <GradientStop Color="#FF41BBCF" Offset="0" />
+                                <GradientStop Color="#FFCEF8FF" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </StackPanel.Background>
+                        <TextBlock Text="Search" Margin="10" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center"></TextBlock>
+                        <CheckBox Name="namecheck" Unchecked="name_Unchecked" Checked="name_Checked" Margin="10" FontWeight="Bold">By name</CheckBox>
+                        <TextBox Name="namebox" Margin="10" Height="30" IsEnabled="False"></TextBox>
+                        <Separator Margin="10,2"/>
+                        <CheckBox Name="pricecheck" Unchecked="price_Unchecked" Checked="price_Checked" FontWeight="Bold" Margin="10">By price</CheckBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock Margin="10" Text="From:"></TextBlock>
+                            <TextBlock Margin="10" Text="To:" Grid.Row="1"></TextBlock>
+                            <TextBox Name="priceboxmin" Margin="10" Text="0" Grid.Column="1" Height="20" IsEnabled="False"></TextBox>
+                            <TextBox Name="priceboxmax" Margin="10" Text="1000" Grid.Column="1" Grid.Row="1" Height="20" IsEnabled="False"/>
+                        </Grid>
+                        <Separator Margin="10,2"/>
+                        <CheckBox Name="catcheck" Checked="cat_Checked" Unchecked="cat_Unchecked" FontWeight="Bold" Margin="10">By category</CheckBox>
+                        <ComboBox Name="combobox1" Margin="10" IsEnabled="False"></ComboBox>
+                        <Button Margin="40,5" Height="30" Click="Button_Click_1" Content="Search"/>
+                        <Button Margin="40,5" Height="30" Click="Button_Click_2" Content="Show all"/>
+                    </StackPanel>
+                    <ListBox MinWidth="800" ScrollViewer.HorizontalScrollBarVisibility="Auto"  ScrollViewer.VerticalScrollBarVisibility="Auto"  Grid.Column="1" Name="listbox1" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" AlternationCount="2" ItemContainerStyle="{StaticResource alternatingWithTriggers}" ItemsSource="{Binding Source={StaticResource cos}}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="7*"></ColumnDefinition>
+                                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding Name}"></TextBlock>
+                                    <TextBlock FontSize="14" Text="{Binding Description}" Grid.Row="1"/>
+                                    <TextBlock FontSize="12" Grid.Row="2">
+                                    <Run Text="Category:" FontWeight="Bold"/>
+                                    <Run Text="{Binding Kategoria}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="18" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" >
+                                    <Run Text="Price:" FontWeight="Bold"/>
+                                    <Run Text="{Binding Price, StringFormat=F2}"/><Run Text="zł"/>
+                                    </TextBlock>
+                                    <Button Click="Button_Click" Grid.Column="2" Grid.RowSpan="3" MaxWidth="120" MinWidth="120" MinHeight="80" MaxHeight="80" >
+                                        <Image Stretch="Fill" Source="addtocart.png"></Image>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Warehouse">
+                <DataGrid  ItemsSource="{Binding}" Name="datagrid1" CanUserAddRows="True" AutoGenerateColumns="True" VerticalAlignment="Top"/>
+            </TabItem>
+
+            <TabItem Header="Cart">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <ListBox  Name="listbox2" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" AlternationCount="2" ItemContainerStyle="{StaticResource alternatingWithTriggers}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Product" FontSize="18" Margin="10" FontWeight="Bold"></TextBlock>
+                                    <TextBlock Text="Price per unit:" Margin="10" FontSize="12" FontWeight="Bold" Grid.Row="1"/>
+                                    <TextBlock Text="Count" Margin="10" FontSize="14" FontWeight="Bold" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" HorizontalAlignment="Right"/>
+                                    <Button Margin="5" Grid.Column="2" Grid.Row="0" MinWidth="30" MaxWidth="30" MinHeight="30" MaxHeight="30" HorizontalAlignment="Right">
+                                        <Image Source="plus.png" Stretch="Fill"></Image>
+                                    </Button>
+                                    <Button Margin="5" Grid.Column="2" Grid.Row="1" MinWidth="30" MaxWidth="30" MinHeight="30" MaxHeight="30" HorizontalAlignment="Right">
+                                        <Image Source="minus.png" Stretch="Fill"></Image>
+                                    </Button>
+                                    <Button Grid.Column="3" Grid.RowSpan="3" MinWidth="120" MaxWidth="120" HorizontalContentAlignment="Stretch" HorizontalAlignment="Right">
+                                        <Image Source="removeFromCart.png" Stretch="Fill"></Image>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Grid.Column="1" Fill="Orange" MaxHeight="150" MinHeight="150">
+                                
+                            </Rectangle>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center" TextAlignment="Center" Width="200" Text="Total Price:"></TextBlock>
+                                <Button Width="150" Height="50" Click="Button_Click_3">Checkout</Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
